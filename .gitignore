@@ -1,0 +1,8 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+catboost_info/
+.ipynb_checkpoints/
+uv.lock
+*.egg-info/
