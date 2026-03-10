@@ -8,15 +8,15 @@ st.markdown("---")
 col1, col2 = st.columns([1, 2])
 
 with col1:
-    st.image("https://via.placeholder.com/300x400?text=Photo", caption="Фото разработчика", width=300)
+    st.image("https://avatars.githubusercontent.com/u/104072081?s=400&u=268ace4df7e0d94e618b033074aaeb3cade7f52f&v=4", caption="Фото разработчика", width=300)
 
 with col2:
     st.markdown("""
     ### ФИО
-    Иванов Иван Иванович
+    Цейдлер Антон Александрович
     
     ### Учебная группа
-    ХХХ-ХХХ
+    ФИТ-231
     
     ### Тема РГР
     Прогнозирование успеваемости студентов с использованием методов машинного обучения
