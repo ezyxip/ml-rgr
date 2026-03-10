@@ -9,9 +9,6 @@ st.set_page_config(page_title="Предсказания", page_icon="🤖", layo
 st.title("🤖 Получение предсказаний от моделей ML")
 st.markdown("---")
 
-# ==============================
-# Загрузка моделей и вспомогательных файлов
-# ==============================
 @st.cache_resource
 def load_models():
     models = {}
@@ -56,9 +53,6 @@ models, scaler, feature_names = load_models()
 
 st.success(f"✓ Загружено моделей: {len(models)} | Признаков: {len(feature_names)}")
 
-# ==============================
-# Функция предсказания
-# ==============================
 TARGET_LABELS = {0: 'Dropout (Отчислен)', 1: 'Enrolled (Учится)', 2: 'Graduate (Выпускник)'}
 TARGET_COLORS = {0: '🔴', 1: '🟡', 2: '🟢'}
 
@@ -76,9 +70,7 @@ def predict(model, model_name, X_df, scaler):
     pred = model.predict(X_input)
     return np.array(pred).flatten().astype(int)
 
-# ==============================
 # Выбор способа ввода
-# ==============================
 st.markdown("### Выберите способ ввода данных")
 input_method = st.radio(
     "Способ ввода:",
@@ -88,9 +80,7 @@ input_method = st.radio(
 
 st.markdown("---")
 
-# ==============================
 # РУЧНОЙ ВВОД
-# ==============================
 if input_method == "📝 Ручной ввод":
     st.markdown("### 📝 Введите данные студента")
     
@@ -167,7 +157,6 @@ if input_method == "📝 Ручной ввод":
     with col8:
         gdp = st.number_input("ВВП", min_value=-5.0, max_value=4.0, value=1.0, step=0.01)
 
-    # Вычисление производных признаков
     total_enrolled = cu_1st_enrolled + cu_2nd_enrolled
     total_approved = cu_1st_approved + cu_2nd_approved
     approval_rate = total_approved / total_enrolled if total_enrolled > 0 else 0.0
@@ -175,7 +164,6 @@ if input_method == "📝 Ручной ввод":
     st.info(f"📊 Производные признаки: Всего записано: **{total_enrolled}** | "
             f"Всего сдано: **{total_approved}** | Доля сданных: **{approval_rate:.2f}**")
 
-    # Формируем строку данных
     input_data = pd.DataFrame([[
         marital_status, application_mode, application_order, course,
         daytime_evening_attendance, previous_qualification, previous_qualification_grade,
@@ -194,7 +182,6 @@ if input_method == "📝 Ручной ввод":
 
     st.markdown("---")
     
-    # Выбор модели
     selected_models = st.multiselect(
         "Выберите модели для предсказания:",
         list(models.keys()),
@@ -217,9 +204,7 @@ if input_method == "📝 Ручной ввод":
                     st.markdown(f"**{model_name}**")
                     st.markdown(f"### {color} {label}")
 
-# ==============================
 # ЗАГРУЗКА CSV
-# ==============================
 else:
     st.markdown("### 📁 Загрузите CSV файл")
     st.markdown("""
@@ -235,13 +220,11 @@ else:
             upload_df = pd.read_csv(uploaded_file)
             st.markdown(f"✓ Загружено **{upload_df.shape[0]}** записей, **{upload_df.shape[1]}** столбцов")
             
-            # Удаляем целевую переменную, если она есть
             if 'target_encoded' in upload_df.columns:
                 upload_df = upload_df.drop(columns=['target_encoded'])
             if 'target' in upload_df.columns:
                 upload_df = upload_df.drop(columns=['target'])
             
-            # Добавляем производные признаки, если их нет
             if 'total_enrolled' not in upload_df.columns:
                 upload_df['total_enrolled'] = (upload_df['curricular_units_1st_sem_enrolled'] + 
                                                 upload_df['curricular_units_2nd_sem_enrolled'])
@@ -253,7 +236,6 @@ else:
                     upload_df['total_enrolled'] > 0,
                     upload_df['total_approved'] / upload_df['total_enrolled'], 0)
             
-            # Проверяем наличие всех признаков
             missing_cols = set(feature_names) - set(upload_df.columns)
             if missing_cols:
                 st.error(f"Отсутствуют столбцы: {missing_cols}")
@@ -263,7 +245,6 @@ else:
                 with st.expander("Просмотреть загруженные данные"):
                     st.dataframe(upload_df.head(10), use_container_width=True)
                 
-                # Выбор модели
                 selected_model = st.selectbox("Выберите модель:", list(models.keys()))
                 
                 if st.button("🔮 Получить предсказания", type="primary", use_container_width=True):
@@ -275,7 +256,6 @@ else:
                     
                     st.markdown("### 📊 Результаты")
                     
-                    # Статистика
                     col1, col2, col3 = st.columns(3)
                     dropout_count = (preds == 0).sum()
                     enrolled_count = (preds == 1).sum()
@@ -290,7 +270,6 @@ else:
                         use_container_width=True
                     )
                     
-                    # Скачать результаты
                     csv_result = result_df.to_csv(index=False).encode('utf-8')
                     st.download_button(
                         "📥 Скачать результаты (CSV)",
